@@ -2,6 +2,8 @@
 
 A local web app that compares your resume against real job postings from public APIs, classifies roles into career tracks, and generates market-fit reports with skill gaps and study recommendations.
 
+**Live demo:** [job-listing-comparer-production.up.railway.app](https://job-listing-comparer-production.up.railway.app/)
+
 ## What it does
 
 1. Upload a resume PDF
@@ -146,7 +148,9 @@ For lightweight cloud hosts (Railway, Render, etc.), use **`PDF_RENDERER=browser
 
 After analysis with `browser` mode, the results page automatically opens `/report/print`, which triggers a client-side PDF download — no button click required.
 
-## Cloud deploy: Railway free tier (example)
+## Cloud deploy: Railway
+
+**Production:** [https://job-listing-comparer-production.up.railway.app/](https://job-listing-comparer-production.up.railway.app/)
 
 Deploy the **app Dockerfile only** (not full `docker-compose`). Recommended env:
 
