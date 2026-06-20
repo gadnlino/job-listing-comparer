@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analysis Results</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <main class="container">
+    <h1>Analysis Results</h1>
+
+    {% if result.warnings %}
+    <div class="alert alert-warning">
+      {% for warning in result.warnings %}
+      <p>{{ warning }}</p>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if llm_fallback %}
+    <div class="alert alert-warning">
+      LLM summary unavailable — using template executive summary in the PDF report.
+    </div>
+    {% endif %}
+
+    {% if result.matches|length == 0 %}
+    <div class="alert alert-info">No jobs were found from the selected sources. Try different sources or increase max results.</div>
+    {% endif %}
+
+    <section class="cards">
+      <div class="card stat">
+        <h3>Jobs analyzed</h3>
+        <p class="big">{{ result.total_jobs_analyzed }}</p>
+      </div>
+      <div class="card stat">
+        <h3>Sources used</h3>
+        <p>{{ result.sources_used|join(', ') or 'None' }}</p>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Resume skills</h2>
+      <ul class="tags">
+        {% for skill in result.resume_skills %}
+        <li>{{ skill.canonical_name }}</li>
+        {% else %}
+        <li>None detected</li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Jobs by career track</h2>
+      <ul>
+        {% for track, count in result.jobs_by_track.items() %}
+        <li>{{ track }}: {{ count }}</li>
+        {% else %}
+        <li>No track data</li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Top missing skills</h2>
+      <ul>
+        {% for item in result.top_missing_skills[:20] %}
+        <li>{{ item.skill }} ({{ item.count }})</li>
+        {% else %}
+        <li>None</li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Study recommendation</h2>
+      <pre class="recommendation">{{ result.study_recommendation }}</pre>
+    </section>
+
+    <section class="card">
+      <h2>Downloads</h2>
+      <p>
+        <a href="/download/job_matches.csv">Download CSV</a> |
+        <a href="/download/market_summary.md">Download Markdown</a>
+        {% if pdf_generated %}
+        | <a href="/download/market_fit_report.pdf" target="_blank" rel="noopener">Open PDF report</a>
+        {% endif %}
+      </p>
+      <div id="pdf-blocked-notice" class="alert alert-warning" style="display:none;">
+        PDF popup was blocked.
+        <a href="/download/market_fit_report.pdf" target="_blank" rel="noopener">Open PDF report</a>
+      </div>
+    </section>
+
+    {% if has_remotive %}
+    <p class="attribution">Job data includes listings from <a href="https://remotive.com" target="_blank" rel="noopener">Remotive</a>.</p>
+    {% endif %}
+
+    <section class="card">
+      <h2>All job matches</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Company</th>
+              <th>Location</th>
+              <th>Source</th>
+              <th>Track</th>
+              <th>Fit</th>
+              <th>Matched</th>
+              <th>Missing</th>
+              <th>Link</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for match in result.matches %}
+            <tr>
+              <td>{{ match.job.title }}</td>
+              <td>{{ match.job.company }}</td>
+              <td>{{ match.job.location or 'N/A' }}</td>
+              <td>{{ match.job.source }}</td>
+              <td>{{ match.primary_track }}</td>
+              <td>{{ match.fit_score }}</td>
+              <td>{{ match.matched_skills|join(', ') }}</td>
+              <td>{{ match.missing_skills|join(', ') }}</td>
+              <td>
+                {% if match.link_status == 'accessible' %}
+                <a href="{{ match.job.url }}" target="_blank" rel="noopener">View</a>
+                {% elif match.link_status == 'unknown' %}
+                <a href="{{ match.job.url }}" target="_blank" rel="noopener" title="Link not verified">View (unverified)</a>
+                {% else %}
+                <span class="link-unavailable">Unavailable</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <p><a href="/">← Analyze another resume</a></p>
+  </main>
+
+  {% if pdf_generated %}
+  <script>
+    (function () {
+      var pdf = window.open('/download/market_fit_report.pdf', '_blank', 'noopener');
+      if (!pdf) {
+        document.getElementById('pdf-blocked-notice').style.display = 'block';
+      }
+    })();
+  </script>
+  {% endif %}
+</body>
+</html>

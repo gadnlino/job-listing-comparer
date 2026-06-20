@@ -1,0 +1,15 @@
+{
+  "jobs": [
+    {
+      "id": 1,
+      "url": "https://remotive.com/remote-jobs/software-dev/123",
+      "title": "Senior Python AWS Engineer",
+      "company_name": "Acme Corp",
+      "candidate_required_location": "Worldwide",
+      "job_region": "Global",
+      "description": "Build serverless APIs with Python, AWS Lambda, DynamoDB, and Kubernetes.",
+      "publication_date": "2024-01-15T00:00:00Z",
+      "salary": "$120k"
+    }
+  ]
+}

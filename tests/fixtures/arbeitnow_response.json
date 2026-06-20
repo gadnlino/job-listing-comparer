@@ -1,0 +1,15 @@
+{
+  "data": [
+    {
+      "slug": "backend-engineer-berlin",
+      "title": "Platform Engineer Kubernetes",
+      "company_name": "Euro Tech",
+      "location": "Berlin, Germany",
+      "remote": true,
+      "url": "https://www.arbeitnow.com/jobs/backend-engineer-berlin",
+      "description": "Platform engineering with Kubernetes, Terraform, and observability.",
+      "tags": ["kubernetes", "terraform"]
+    }
+  ],
+  "links": {}
+}

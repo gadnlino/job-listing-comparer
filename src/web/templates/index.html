@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Career Market Fit Scanner</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <main class="container">
+    <h1>Career Market Fit Scanner</h1>
+    <p class="lead">
+      Upload your resume PDF to compare your skills against real job postings from
+      Remotive, Adzuna, and Arbeitnow. Get a market-fit report with career track rankings,
+      missing skills, and study recommendations.
+    </p>
+
+    <div id="stream-error" class="alert alert-error" hidden></div>
+
+    {% if error %}
+    <div class="alert alert-error">{{ error }}</div>
+    {% endif %}
+
+    <form id="analyze-form" action="/analyze" method="post" enctype="multipart/form-data" class="card">
+      <label>
+        Resume PDF
+        <input type="file" name="file" accept=".pdf,application/pdf" required>
+      </label>
+
+      <label>
+        Max results
+        <input type="number" name="max_results" value="100" min="1" max="500">
+      </label>
+
+      <label>
+        Job source
+        <select name="source">
+          <option value="all">All</option>
+          <option value="remotive">Remotive</option>
+          <option value="adzuna">Adzuna</option>
+          <option value="arbeitnow">Arbeitnow</option>
+        </select>
+      </label>
+
+      <label>
+        Adzuna country
+        <select name="adzuna_country">
+          <option value="all">All default countries</option>
+          {% for code in adzuna_countries %}
+          <option value="{{ code }}">{{ code|upper }}</option>
+          {% endfor %}
+        </select>
+      </label>
+
+      <button type="submit">Analyze</button>
+
+      <div id="analysis-progress" class="analysis-progress" hidden aria-live="polite" aria-busy="false">
+        <div class="analysis-progress-inner">
+          <div class="loading-spinner" aria-hidden="true"></div>
+          <p class="loading-title">Analyzing your resume…</p>
+          <p id="loading-status" class="loading-status">Starting…</p>
+          <p id="loading-detail" class="loading-detail" hidden></p>
+          <div id="loading-progress" class="loading-progress" hidden>
+            <div id="loading-progress-bar" class="loading-progress-bar"></div>
+          </div>
+        </div>
+      </div>
+    </form>
+    <noscript>
+      <p class="alert alert-info">JavaScript is disabled. Submitting the form uses the standard page reload without live progress.</p>
+    </noscript>
+  </main>
+
+  <script>
+    (function () {
+      var form = document.getElementById('analyze-form');
+      var progressPanel = document.getElementById('analysis-progress');
+      var statusEl = document.getElementById('loading-status');
+      var detailEl = document.getElementById('loading-detail');
+      var progressWrap = document.getElementById('loading-progress');
+      var progressBar = document.getElementById('loading-progress-bar');
+      var streamError = document.getElementById('stream-error');
+
+      function showProgress() {
+        progressPanel.hidden = false;
+        progressPanel.setAttribute('aria-busy', 'true');
+        progressPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        statusEl.textContent = 'Starting…';
+        detailEl.hidden = true;
+        detailEl.textContent = '';
+        progressWrap.hidden = true;
+        progressBar.style.width = '0%';
+        streamError.hidden = true;
+        streamError.textContent = '';
+      }
+
+      function hideProgress() {
+        progressPanel.hidden = true;
+        progressPanel.setAttribute('aria-busy', 'false');
+      }
+
+      function setFormDisabled(disabled) {
+        Array.prototype.forEach.call(form.elements, function (el) {
+          el.disabled = disabled;
+        });
+      }
+
+      function showStreamError(message) {
+        hideProgress();
+        streamError.textContent = message;
+        streamError.hidden = false;
+        setFormDisabled(false);
+      }
+
+      function updateProgress(event) {
+        if (event.message) {
+          statusEl.textContent = event.message;
+        }
+        if (event.title) {
+          detailEl.textContent = event.title;
+          detailEl.hidden = false;
+        } else {
+          detailEl.hidden = true;
+        }
+        if (typeof event.current === 'number' && typeof event.total === 'number' && event.total > 0) {
+          progressWrap.hidden = false;
+          var pct = Math.min(100, Math.round((event.current / event.total) * 100));
+          progressBar.style.width = pct + '%';
+        }
+      }
+
+      async function readNdjsonStream(response) {
+        var reader = response.body.getReader();
+        var decoder = new TextDecoder();
+        var buffer = '';
+
+        while (true) {
+          var chunk = await reader.read();
+          if (chunk.done) break;
+          buffer += decoder.decode(chunk.value, { stream: true });
+          var lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+          for (var i = 0; i < lines.length; i++) {
+            var line = lines[i].trim();
+            if (!line) continue;
+            var event = JSON.parse(line);
+            if (event.type === 'progress') {
+              updateProgress(event);
+            } else if (event.type === 'error') {
+              showStreamError(event.message || 'Analysis failed.');
+              return;
+            } else if (event.type === 'done') {
+              window.location.href = event.redirect || '/analyze/result';
+              return;
+            }
+          }
+        }
+
+        if (buffer.trim()) {
+          var finalEvent = JSON.parse(buffer.trim());
+          if (finalEvent.type === 'error') {
+            showStreamError(finalEvent.message || 'Analysis failed.');
+            return;
+          }
+          if (finalEvent.type === 'done') {
+            window.location.href = finalEvent.redirect || '/analyze/result';
+            return;
+          }
+        }
+
+        showStreamError('Analysis ended unexpectedly. Please try again.');
+      }
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        var fileInput = form.querySelector('input[name="file"]');
+        if (!fileInput || !fileInput.files || !fileInput.files.length) {
+          showStreamError('Please choose a PDF file.');
+          return;
+        }
+
+        var formData = new FormData(form);
+        showProgress();
+        setFormDisabled(true);
+
+        fetch('/analyze/stream', {
+          method: 'POST',
+          body: formData,
+        })
+          .then(function (response) {
+            if (!response.ok) {
+              return response.json().then(function (data) {
+                var message = 'Server returned ' + response.status;
+                if (data && data.detail) {
+                  if (typeof data.detail === 'string') {
+                    message = data.detail;
+                  } else if (Array.isArray(data.detail) && data.detail.length) {
+                    message = data.detail.map(function (item) {
+                      return item.msg || String(item);
+                    }).join(' ');
+                  }
+                }
+                throw new Error(message);
+              }).catch(function (parseErr) {
+                if (parseErr instanceof Error && parseErr.message.indexOf('Server returned') !== 0) {
+                  throw parseErr;
+                }
+                throw new Error('Server returned ' + response.status);
+              });
+            }
+            return readNdjsonStream(response);
+          })
+          .catch(function (err) {
+            showStreamError(err.message || 'Network error. Please try again.');
+          });
+      });
+    })();
+  </script>
+</body>
+</html>

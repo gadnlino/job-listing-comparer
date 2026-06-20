@@ -1,0 +1,15 @@
+{
+  "results": [
+    {
+      "id": "abc123",
+      "title": "Backend Engineer AWS",
+      "description": "Python, Terraform, PostgreSQL, microservices.",
+      "redirect_url": "https://example.com/job/abc123",
+      "salary_min": 80000,
+      "salary_max": 120000,
+      "salary_currency": "GBP",
+      "company": {"display_name": "Tech Ltd"},
+      "location": {"display_name": "London"}
+    }
+  ]
+}
