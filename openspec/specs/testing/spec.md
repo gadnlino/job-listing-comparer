@@ -92,17 +92,22 @@ The system SHALL verify link status and filtering appear in generated reports.
 
 ### Requirement: Test suite runs without external services
 
-The system SHALL include a pytest suite that validates all capabilities without requiring live calls to external job APIs, Ollama, or job listing URLs.
+The system SHALL include a pytest suite that validates all capabilities without requiring live calls to external job APIs, LLM providers (including Groq), Ollama, job listing URLs, or browser PDF libraries at runtime in CI.
 
 #### Scenario: All externals mocked
 
 - **WHEN** `pytest` runs
-- **THEN** all tests pass without live calls to Remotive, Adzuna, Arbeitnow, Ollama, or job listing URLs
+- **THEN** all tests pass without live calls to Remotive, Adzuna, Arbeitnow, Groq, Ollama, or job listing URLs
 
 #### Scenario: WeasyPrint mocked in default test run
 
 - **WHEN** `pytest` runs in CI or environments without WeasyPrint system libraries
 - **THEN** PDF rendering tests mock WeasyPrint and still pass
+
+#### Scenario: Browser PDF mode does not require WeasyPrint in CI
+
+- **WHEN** tests run with `PDF_RENDERER=browser`
+- **THEN** report generation tests pass without WeasyPrint installed or invoked on the server
 
 ### Requirement: Comprehensive pytest test suite
 
@@ -111,7 +116,7 @@ The system SHALL include a pytest test suite covering all capabilities: resume p
 #### Scenario: Test suite runs offline
 
 - **WHEN** the developer runs `pytest`
-- **THEN** all tests pass without live calls to Remotive, Adzuna, Arbeitnow, or Ollama
+- **THEN** all tests pass without live calls to Remotive, Adzuna, Arbeitnow, Groq, or Ollama
 
 #### Scenario: External HTTP mocked in tests
 
@@ -202,16 +207,36 @@ The system SHALL include tests for all report outputs and the LLM summarizer cov
 #### Scenario: LLM summarizer tests
 
 - **WHEN** `tests/test_llm_summarizer.py` runs
-- **THEN** it verifies the prompt contains only structured JSON, never raw job descriptions, and template fallback works when Ollama fails
+- **THEN** it verifies the prompt contains only structured JSON, never raw job descriptions, OpenAI-compatible chat completion requests include Authorization when `LLM_API_KEY` is set, and template fallback works when all LLM providers fail
 
-#### Scenario: PDF report tests
+#### Scenario: HTML report builder tests
 
-- **WHEN** `tests/test_report_pdf.py` runs
-- **THEN** it verifies PDF file creation with required sections and skips generation when no jobs are found
+- **WHEN** report HTML builder tests run
+- **THEN** they verify Markdown is converted to HTML containing required section headings and table markup for both WeasyPrint and browser paths
+
+#### Scenario: Server PDF tests in weasyprint mode
+
+- **WHEN** `tests/test_report_pdf.py` runs with `PDF_RENDERER=weasyprint`
+- **THEN** it verifies PDF file creation with required sections (WeasyPrint mocked) and skips generation when no jobs are found
+
+#### Scenario: Browser PDF mode skips server PDF write
+
+- **WHEN** report generation tests run with `PDF_RENDERER=browser`
+- **THEN** they verify `market_fit_report.md` is written, no server `.pdf` is required, and `pdf_generated` is true when jobs exist
 
 ### Requirement: Web application tests
 
 The system SHALL include tests for all HTTP routes and UI warnings covering all web-app spec scenarios.
+
+#### Scenario: Print route returns HTML when report exists
+
+- **WHEN** `GET /report/print` is requested after a successful analysis with `PDF_RENDERER=browser`
+- **THEN** the response is HTML containing report content and client-side auto-download script markup
+
+#### Scenario: Auto-open script targets print route in browser mode
+
+- **WHEN** web app tests render the results page with `PDF_RENDERER=browser` and `pdf_generated=True`
+- **THEN** the page includes script opening `/report/print` in a new tab
 
 #### Scenario: Web route tests
 
@@ -225,7 +250,7 @@ The system SHALL include tests for all HTTP routes and UI warnings covering all 
 
 #### Scenario: PDF auto-open HTML contract tests
 
-- **WHEN** POST /analyze completes with a generated PDF
+- **WHEN** POST /analyze completes with a generated PDF in weasyprint mode
 - **THEN** the results HTML contains the auto-open script targeting `/download/market_fit_report.pdf` and a popup-blocked fallback element
 
 #### Scenario: No auto-open when PDF absent
