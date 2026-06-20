@@ -1,16 +1,16 @@
 # Career Market Fit Report
-*Generated: 2026-06-20 12:21*
+*Generated: 2026-06-20 13:05*
 
 ## Executive Summary
 Here is a 2-3 paragraph executive summary of the provided JSON data:
 
-The resume skills listed are highly relevant to backend cloud jobs, with AWS, CloudWatch, and IAM being among the top requested skills. The most in-demand job tracks for backend cloud engineers are backend_cloud (64 jobs), platform_engineering (32 jobs), and data_engineering (9 jobs). The average fit score by track shows that backend_cloud and data_engineering have a high average fit score of 55.4% and 57.9%, respectively, indicating strong relevance to the job requirements.
+The candidate's skills and experience align with in-demand technologies in the cloud computing industry. Their resume highlights proficiency in AWS, Agile, Docker, GraphQL, JavaScript, Kubernetes, Microservices, Node.js, PostgreSQL, Python, Serverless, TypeScript, Git, API Gateway, CloudWatch, DynamoDB, IAM, RDS, SNS, SQS, and X-Ray. The candidate has also demonstrated experience with data engineering, cloud security, platform engineering, and AI engineering.
 
-The top missing skills are AI, Security, Observability, LLM, CI/CD, RAG, dbt, Data Engineering, Terraform, Airflow, DevSecOps, Kafka, REST APIs, which suggests that these areas require further development or training to increase chances of landing a backend cloud job. The study recommendation highlights the importance of studying backend_cloud and data_engineering specialization candidates with high demand and moderate fit.
+The job market analysis reveals that the candidate's skills are in high demand across various sources, including Adzuna, Remotive, and Arbeitnow. The top tracks for jobs include backend_cloud, data_engineering, cloud_security, platform_engineering, and ai_engineering. However, there is a notable gap in AI-related job openings, suggesting that the candidate should prioritize studying this area to increase their chances of landing high-fit jobs.
 
-The per_source_summary provides insights into the number of jobs posted for each source (adzuna: 109,arbeitnow: 45, remotive: 16) and their average fit scores. The top track for each source is also provided, indicating that backend_cloud is consistently in demand across all sources.
+Based on the analysis, we recommend that the candidate focus on developing skills in areas with strong demand and moderate fit, such as backend_cloud and data_engineering. Additionally, prioritizing study targets for AI, Security, Observability, LLM, and Terraform can help bridge the gap in job openings and increase their chances of landing high-fit jobs.
 
-## Total Jobs Analyzed: 170
+## Total Jobs Analyzed: 53
 
 ## Resume Skills Detected
 - AWS
@@ -41,92 +41,91 @@ The per_source_summary provides insights into the number of jobs posted for each
 ### Jobs by Source
 | Source | Jobs |
 | --- | --- |
-| adzuna | 109 |
-| arbeitnow | 45 |
-| remotive | 16 |
+| adzuna | 33 |
+| remotive | 7 |
+| arbeitnow | 13 |
 
 ### Jobs by Career Track
 | Track | Jobs | Avg Fit |
 | --- | --- | --- |
-| backend_cloud | 64 | 55.4 |
-| platform_engineering | 32 | 20.4 |
-| data_engineering | 9 | 57.9 |
-| cloud_security | 30 | 24.4 |
-| ai_engineering | 31 | 13.1 |
-| unclassified | 4 | 0 |
+| backend_cloud | 23 | 61.8 |
+| data_engineering | 5 | 54.1 |
+| cloud_security | 8 | 32.4 |
+| platform_engineering | 7 | 19.2 |
+| ai_engineering | 10 | 20.7 |
 
 ## Top 20 Most Requested Skills
-- AI (72)
-- Security (60)
-- AWS Lambda (55)
-- X-Ray (55)
-- RDS (55)
-- DynamoDB (55)
-- SQS (55)
-- IAM (55)
-- CloudWatch (55)
-- SNS (55)
-- API Gateway (55)
-- Python (30)
-- Observability (29)
-- LLM (27)
-- Git (26)
-- TypeScript (18)
-- CI/CD (16)
-- JavaScript (14)
-- Kubernetes (14)
-- RAG (13)
+- AI (26)
+- RDS (21)
+- SQS (21)
+- AWS Lambda (21)
+- API Gateway (21)
+- SNS (21)
+- X-Ray (21)
+- DynamoDB (21)
+- CloudWatch (21)
+- IAM (21)
+- Security (19)
+- Python (17)
+- Observability (11)
+- Git (9)
+- LLM (9)
+- Agile (5)
+- Terraform (5)
+- JavaScript (5)
+- TypeScript (5)
+- Serverless (4)
 
 ## Top 20 Missing Skills
-- AI (72)
-- Security (60)
-- Observability (29)
-- LLM (27)
-- CI/CD (16)
-- RAG (13)
-- dbt (12)
-- Data Engineering (11)
-- Terraform (11)
-- Airflow (10)
-- DevSecOps (10)
-- Kafka (6)
-- REST APIs (4)
+- AI (26)
+- Security (19)
+- Observability (11)
+- LLM (9)
+- Terraform (5)
+- Data Engineering (4)
+- dbt (4)
+- RAG (4)
+- CI/CD (3)
+- Airflow (3)
+- Kafka (2)
+- DevSecOps (2)
+- REST APIs (1)
 
 ## Per-Source Snapshot
 | Source | Jobs | Avg Fit | Top Track |
 | --- | --- | --- | --- |
-| adzuna | 109 | 31.1 | backend_cloud |
-| arbeitnow | 45 | 37.8 | backend_cloud |
-| remotive | 16 | 48.0 | backend_cloud |
+| adzuna | 33 | 38.3 | backend_cloud |
+| remotive | 7 | 48.6 | backend_cloud |
+| arbeitnow | 13 | 52.9 | backend_cloud |
 
 ## Top 20 Matching Jobs
 | Title | Company | Source | Fit | Track | Seniority | Link Status | URL |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Senior Machine Learning Engineer Python AWS | Client Server | adzuna | 100.0 | backend_cloud | senior | unknown | https://www.adzuna.co.uk/jobs/land/ad/5765659501?se=CiILj7ts8RGl0MKcaJBBpg&utm_medium=api&utm_source=76293b30&v=1031E4DCC4E550B255FB2F18076E84DF5B796FA0 |
-| Full-Stack java Cloud Serverless Engineer (AWS) | Velocity Talent Ltd | adzuna | 100.0 | backend_cloud | unknown | unknown | https://www.adzuna.co.uk/jobs/land/ad/5738373063?se=qgt3j7ts8RGMh_173Qd3yQ&utm_medium=api&utm_source=76293b30&v=D59E2D6C23A5FCE1AEA86D43AE2813B594263CB5 |
-| Senior Backend Engineer (AWS) | Calibrated Staffing | adzuna | 100.0 | backend_cloud | senior |  | https://www.adzuna.com/details/5232726502?utm_medium=api&utm_source=76293b30 |
+| Full-Stack java Cloud Serverless Engineer (AWS) | Velocity Talent Ltd | adzuna | 100.0 | backend_cloud | unknown | unknown | https://www.adzuna.co.uk/jobs/land/ad/5738373063?se=FHE5p8Fs8RGrKszqFbIEfQ&utm_medium=api&utm_source=76293b30&v=D59E2D6C23A5FCE1AEA86D43AE2813B594263CB5 |
 | Sr. Python AWS Engineer | Two95 International Inc. | adzuna | 100.0 | backend_cloud | senior |  | https://www.adzuna.com/details/5422662302?utm_medium=api&utm_source=76293b30 |
-| Software Engineer, Serverless Networking | Google | adzuna | 100.0 | backend_cloud | unknown | unknown | https://www.adzuna.com/land/ad/5770182357?se=om4Wlbts8RGMh_173Qd3yQ&utm_medium=api&utm_source=76293b30&v=448DAD9ABB083CD12FBBD1F9F505DA9DE7FDF2D4 |
-| Engineering Manager, Serverless Networking Infrastructure | Google | adzuna | 100.0 | backend_cloud | manager | unknown | https://www.adzuna.com/land/ad/5769878235?se=om4Wlbts8RGMh_173Qd3yQ&utm_medium=api&utm_source=76293b30&v=F849FDDFF92C81AB5834E125FE6B73C96961EABC |
-| Data Platform Engineer | Tata Consultancy Services | adzuna | 100.0 | backend_cloud | unknown | unknown | https://www.adzuna.es/land/ad/5750888976?se=1DXQm7ts8RGMh_173Qd3yQ&utm_medium=api&utm_source=76293b30&v=EC509CE3948BF962B49ED68A382B60DA55921B17 |
-| Senior Backend Engineer - JVM (Java/Kotlin) & AWS | adsquare | adzuna | 100.0 | backend_cloud | senior |  | https://www.adzuna.de/details/5727275082?utm_medium=api&utm_source=76293b30 |
-| Softwareontwikkelaar | WR.nl Solliciteren | adzuna | 100.0 | backend_cloud | senior | unknown | https://www.adzuna.nl/land/ad/5769312150?se=JDdDpbts8RGJe8gKxAvXaw&utm_medium=api&utm_source=76293b30&v=611238668AC9A3DD2EA46A86F8B324621F774BDA |
-| Senior Software Developer / Infrastructure Engineer (IoT, AWS) Python | WR.nl Solliciteren | adzuna | 100.0 | backend_cloud | senior |  | https://www.adzuna.nl/details/5768076869?utm_medium=api&utm_source=76293b30 |
-| Linux automation engineer-Site reliability engineer | Randstad Professional | adzuna | 100.0 | platform_engineering | unknown | unknown | https://www.adzuna.nl/land/ad/5768041324?se=bpwFp7ts8RGMh_173Qd3yQ&utm_medium=api&utm_source=76293b30&v=CBBFC27A46A4430235A687DC55CCD2561D905574 |
-| Business Development Manager:in (m/f/d) | WRING GmbH | arbeitnow | 100.0 | backend_cloud | manager |  | https://www.arbeitnow.com/jobs/companies/wring-gmbh/business-development-managerin-filderstadt-421206 |
+| Software Engineer, Serverless Networking | Google | adzuna | 100.0 | backend_cloud | unknown | unknown | https://www.adzuna.com/land/ad/5770182357?se=tJpLrcFs8RGrKszqFbIEfQ&utm_medium=api&utm_source=76293b30&v=448DAD9ABB083CD12FBBD1F9F505DA9DE7FDF2D4 |
+| Data Platform Engineer | Tata Consultancy Services | adzuna | 100.0 | backend_cloud | unknown | unknown | https://www.adzuna.es/land/ad/5750888976?se=ZFPSs8Fs8RGJe8gKxAvXaw&utm_medium=api&utm_source=76293b30&v=EC509CE3948BF962B49ED68A382B60DA55921B17 |
 | Software Engineer (100% Backend, Python & AWS) | Travtus | adzuna | 91.3 | backend_cloud | unknown |  | https://www.adzuna.co.uk/jobs/details/5459020376?utm_medium=api&utm_source=76293b30 |
 | Aws Engineer (Python) | Reversa | adzuna | 91.3 | backend_cloud | unknown |  | https://www.adzuna.es/details/5768459966?utm_medium=api&utm_source=76293b30 |
 | Senior AI Backend Engineer (AWS & Multi-Agent Systems). Remoto | eXperience IT Solutions | adzuna | 90.5 | backend_cloud | senior |  | https://www.adzuna.es/details/5718414211?utm_medium=api&utm_source=76293b30 |
-| Data Engineer (AWS) - Manchester | Noir | adzuna | 88.0 | data_engineering | lead | unknown | https://www.adzuna.co.uk/jobs/land/ad/5750745053?se=pk2ok7ts8RGl0MKcaJBBpg&utm_medium=api&utm_source=76293b30&v=BC3591C675DFF5974CFD3F6525C3EECB88FFDD15 |
-| Senior Data Engineer (AWS) - Manchester | Noir | adzuna | 88.0 | data_engineering | senior | unknown | https://www.adzuna.co.uk/jobs/land/ad/5750742289?se=pk2ok7ts8RGl0MKcaJBBpg&utm_medium=api&utm_source=76293b30&v=C47D4810E1A08C7AFD4C26F2F7819A8613E5CA03 |
-| Senior Backend Engineer - AWS Focus | Insight Global | adzuna | 88.0 | backend_cloud | senior | unknown | https://www.adzuna.com/land/ad/5619930610?se=TusvlLts8RGl0MKcaJBBpg&utm_medium=api&utm_source=76293b30&v=C7A86AC4ED10D6D116C5BBFC5B81EB46CFAEE9E0 |
-| Python & AWS Data Engineer | Capgemini | adzuna | 87.5 | backend_cloud | lead | unknown | https://www.adzuna.com/land/ad/5757898742?se=xCyvlLts8RGrKszqFbIEfQ&utm_medium=api&utm_source=76293b30&v=3DAC886D69BE749C8723468429041B3183F21A59 |
-| Data Engineer (AWS/Spark/Python). Inglés | Grupo NS | adzuna | 87.5 | backend_cloud | unknown |  | https://www.adzuna.es/details/5718414204?utm_medium=api&utm_source=76293b30 |
+| Data Engineer (AWS) - Manchester | Noir | adzuna | 88.0 | data_engineering | lead | unknown | https://www.adzuna.co.uk/jobs/land/ad/5750745053?se=ThUBrMFs8RGMh_173Qd3yQ&utm_medium=api&utm_source=76293b30&v=BC3591C675DFF5974CFD3F6525C3EECB88FFDD15 |
+| Senior Backend Engineer - AWS Focus | Insight Global | adzuna | 88.0 | backend_cloud | senior | unknown | https://www.adzuna.com/land/ad/5619930610?se=XJh0rMFs8RGl0MKcaJBBpg&utm_medium=api&utm_source=76293b30&v=C7A86AC4ED10D6D116C5BBFC5B81EB46CFAEE9E0 |
+| AWS Security Engineer | Harvey Nash | adzuna | 86.4 | cloud_security | lead | unknown | https://www.adzuna.co.uk/jobs/land/ad/5765652137?se=wvbVqcFs8RGrKszqFbIEfQ&utm_medium=api&utm_source=76293b30&v=A890AD8FBDEE756890F95335305477AC5E77060F |
+| AWS Security Engineer | CMT Services Inc | adzuna | 86.4 | cloud_security | unknown |  | https://www.adzuna.com/details/5730176820?utm_medium=api&utm_source=76293b30 |
+| DevOps/AWS Cloud Security engineer | CGI | adzuna | 86.4 | cloud_security | unknown |  | https://www.adzuna.es/details/5307342263?utm_medium=api&utm_source=76293b30 |
+| Senior Data Scientist | Lemon.io | remotive | 82.8 | backend_cloud | senior |  | https://remotive.com/remote-jobs/data/senior-data-scientist-2090982 |
+| Senior Engineer (Python, AWS, ScaleUp) | Ocho | adzuna | 80.8 | backend_cloud | senior | unknown | https://www.adzuna.co.uk/jobs/land/ad/5736675156?se=juHHpsFs8RGMh_173Qd3yQ&utm_medium=api&utm_source=76293b30&v=822BAFE69BC6DA5D93DA413D4D4FD919B0946F52 |
+| Senior Software Engineer (Kotlin,Java) (m/f/d) | Flix | arbeitnow | 79.2 | backend_cloud | senior |  | https://www.arbeitnow.com/jobs/companies/flix/senior-software-engineer-kotlinjava-munich-274953 |
+| Senior Full Stack Engineer- Python (m/f/d) | Flix | arbeitnow | 76.3 | backend_cloud | senior |  | https://www.arbeitnow.com/jobs/companies/flix/senior-full-stack-engineer-python-berlin-423041 |
+| Senior Data Engineer - AWS/Snowflake | Eliassen Group | adzuna | 76.0 | data_engineering | senior | unknown | https://www.adzuna.com/land/ad/5767378179?se=rM62scFs8RGJe8gKxAvXaw&utm_medium=api&utm_source=76293b30&v=8C102B06CE50E5C0B80571F06238A0C24370FB1B |
+| Senior Corporate Infrastructure Engineer | Wolt - English | arbeitnow | 75.7 | platform_engineering | senior |  | https://www.arbeitnow.com/jobs/companies/wolt-english/senior-corporate-infrastructure-engineer-berlin-301509 |
+| Senior Analytics Engineer - Risk Analytics | SumUp | arbeitnow | 73.3 | data_engineering | senior |  | https://www.arbeitnow.com/jobs/companies/sumup/senior-analytics-engineer-risk-analytics-berlin-301309 |
+| Tech Lead Full-Stack Rails Engineer | Mitre Media | remotive | 68.8 | ai_engineering | lead |  | https://remotive.com/remote-jobs/software-development/tech-lead-full-stack-rails-engineer-2069746 |
 
 ## Study Recommendation
-- **backend_cloud**: Good specialization candidate (high demand, moderate fit).
+- **backend_cloud**: Strong near-term opportunity (high demand, high fit).
 - **data_engineering**: Good specialization candidate (high demand, moderate fit).
-- Priority study targets based on high-fit job gaps: AI, Security, Observability, LLM, CI/CD.
+- Priority study targets based on high-fit job gaps: AI, Security, Observability, LLM, Terraform.
 
 ---
 

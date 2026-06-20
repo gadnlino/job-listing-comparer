@@ -4,7 +4,7 @@ from pathlib import Path
 import httpx
 
 from src.analysis.pdf_renderer import render_pdf_from_markdown
-from src.config import OLLAMA_BASE_URL, OLLAMA_MODEL, REPORTS_DIR
+from src.config import LLM_BASE_URL, LLM_MODEL, OLLAMA_BASE_URL, OLLAMA_MODEL, REPORTS_DIR
 from src.models import JobMatch, ReportSummaryContext
 
 
@@ -29,6 +29,32 @@ def generate_llm_summary(context: ReportSummaryContext) -> tuple[str, bool]:
         "not present in the data.\n\n"
         f"{context.model_dump_json(indent=2)}"
     )
+    try:
+        # Prefer OpenAI-compatible API (llama.cpp supports this at /v1/chat/completions).
+        response = httpx.post(
+            f"{LLM_BASE_URL}/v1/chat/completions",
+            json={
+                "model": LLM_MODEL,
+                "messages": [
+                    {"role": "system", "content": "You are a helpful career advisor."},
+                    {"role": "user", "content": prompt},
+                ],
+                "temperature": 0.2,
+            },
+            timeout=60.0,
+        )
+        response.raise_for_status()
+        data = response.json()
+        choices = data.get("choices") or []
+        if choices:
+            message = (choices[0].get("message") or {}).get("content") or ""
+            text = str(message).strip()
+            if text:
+                return text, True
+    except Exception:
+        pass
+
+    # Backwards-compatible fallback to Ollama's /api/generate.
     try:
         response = httpx.post(
             f"{OLLAMA_BASE_URL}/api/generate",

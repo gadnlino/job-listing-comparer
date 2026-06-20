@@ -1,0 +1,68 @@
+services:
+  model:
+    image: alpine:3.20
+    volumes:
+      - ./models:/models
+    environment:
+      # Optional override; default Phi-2 Q4_K_M URL is set in the script below
+      - MODEL_URL
+    command:
+      - sh
+      - -lc
+      - |
+        set -e
+        URL="$${MODEL_URL:-https://huggingface.co/TheBloke/phi-2-GGUF/resolve/main/phi-2.Q4_K_M.gguf}"
+        mkdir -p /models
+        if [ ! -f /models/model.gguf ]; then
+          echo "Downloading model to /models/model.gguf ..."
+          echo "Source: $$URL"
+          apk add --no-cache curl
+          curl -L --retry 5 --retry-delay 2 -o /models/model.gguf "$$URL"
+          echo "Download complete."
+        else
+          echo "Model already exists; skipping download."
+        fi
+    restart: "no"
+
+  llama:
+    image: ghcr.io/ggml-org/llama.cpp:server
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./models:/models
+    command:
+      - --model
+      - /models/model.gguf
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8080"
+      - --ctx-size
+      - "4096"
+      - --threads
+      - "4"
+    depends_on:
+      model:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      # llama.cpp OpenAI-compatible endpoint
+      - LLM_BASE_URL=http://llama:8080
+      - LLM_MODEL=default
+      - ADZUNA_APP_ID=${ADZUNA_APP_ID-}
+      - ADZUNA_APP_KEY=${ADZUNA_APP_KEY-}
+      - LINK_VALIDATION_ENABLED=${LINK_VALIDATION_ENABLED-true}
+      - LINK_VALIDATION_MAX_JOBS=${LINK_VALIDATION_MAX_JOBS-200}
+      - LINK_VALIDATION_TIMEOUT_SECONDS=${LINK_VALIDATION_TIMEOUT_SECONDS-10}
+      - LINK_VALIDATION_MIN_BODY_BYTES=${LINK_VALIDATION_MIN_BODY_BYTES-500}
+    volumes:
+      - ./data:/app/data
+      - ./reports:/app/reports
+    depends_on:
+      - llama
+    restart: unless-stopped

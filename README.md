@@ -58,9 +58,43 @@ LINK_VALIDATION_MIN_BODY_BYTES=500
 
 403/429 responses are treated as unverified — those jobs are kept. Set `LINK_VALIDATION_ENABLED=false` to skip checks entirely.
 
-## Optional: Ollama (LLM executive summary)
+## Optional: LLM executive summary (llama.cpp or Ollama)
 
-The PDF report includes an executive summary. With [Ollama](https://ollama.com/) running locally, the summary is generated from structured metrics only — never raw resume text or full job descriptions.
+The PDF report includes an executive summary. With a local LLM server running, the summary is generated from structured metrics only — never raw resume text or full job descriptions.
+
+### Option A: llama.cpp server (recommended for Docker Compose)
+
+This repo includes a `docker-compose.yml` that runs:
+- `app` (FastAPI)
+- `llama` (llama.cpp `llama-server`, OpenAI-compatible API)
+
+1. Put a GGUF model at `./models/model.gguf`
+2. Run:
+
+```bash
+docker compose up --build
+```
+
+Then open `http://127.0.0.1:8000`.
+
+#### Auto-download a simple default model (Phi-2)
+
+If you don't want to manually download a model, the default `docker-compose.yml` will download a small CPU-friendly GGUF on first run (Phi-2 Q4_K_M) into `./models/model.gguf`.
+
+To change the model, set `MODEL_URL` to a direct `.gguf` download URL:
+
+```bash
+MODEL_URL="https://huggingface.co/TheBloke/phi-2-GGUF/resolve/main/phi-2.Q4_K_M.gguf" docker compose up --build
+```
+
+Configure via `.env` (defaults shown):
+
+```env
+LLM_BASE_URL=http://localhost:8080
+LLM_MODEL=default
+```
+
+### Option B: Ollama (backwards compatible)
 
 ```bash
 ollama pull llama3.2
@@ -74,7 +108,7 @@ OLLAMA_BASE_URL=http://localhost:11434
 OLLAMA_MODEL=llama3.2
 ```
 
-If Ollama is unavailable, a deterministic template summary is used instead.
+If the LLM server is unavailable, a deterministic template summary is used instead.
 
 ## Platform authentication
 
