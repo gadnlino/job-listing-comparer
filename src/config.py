@@ -23,6 +23,12 @@ OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2")
 # LLM configuration (preferred). Backwards-compatible with Ollama env vars.
 LLM_BASE_URL = os.getenv("LLM_BASE_URL", OLLAMA_BASE_URL).rstrip("/")
 LLM_MODEL = os.getenv("LLM_MODEL", OLLAMA_MODEL).strip()
+LLM_API_KEY = os.getenv("LLM_API_KEY", "").strip()
+
+_pdf_renderer = os.getenv("PDF_RENDERER", "weasyprint").strip().lower()
+if _pdf_renderer not in {"browser", "weasyprint", "off"}:
+    _pdf_renderer = "weasyprint"
+PDF_RENDERER = _pdf_renderer
 
 LINK_VALIDATION_ENABLED = os.getenv("LINK_VALIDATION_ENABLED", "true").lower() in ("1", "true", "yes")
 LINK_VALIDATION_MAX_JOBS = int(os.getenv("LINK_VALIDATION_MAX_JOBS", "200"))

@@ -36,20 +36,59 @@ def test_template_fallback():
     assert "1" in summary
 
 
+def test_llm_chat_completion_success(monkeypatch):
+    monkeypatch.setattr("src.analysis.report_generator.LLM_API_KEY", "test-key")
+    context = _sample_context()
+    with patch("httpx.post") as mock_post:
+        mock_post.return_value = httpx_response(
+            200,
+            {"choices": [{"message": {"content": "Summary from LLM."}}]},
+            method="POST",
+            url="https://api.groq.com/openai/v1/chat/completions",
+        )
+        summary, used = generate_llm_summary(context)
+    assert used is True
+    assert "Summary" in summary
+    headers = mock_post.call_args.kwargs["headers"]
+    assert headers["Authorization"] == "Bearer test-key"
+    messages = mock_post.call_args.kwargs["json"]["messages"]
+    prompt = messages[1]["content"]
+    assert "Python" in prompt
+    assert "SECRET" not in prompt
+
+
+def test_llm_chat_completion_omits_auth_without_api_key(monkeypatch):
+    monkeypatch.setattr("src.analysis.report_generator.LLM_API_KEY", "")
+    context = _sample_context()
+    with patch("httpx.post") as mock_post:
+        mock_post.side_effect = [
+            httpx_response(
+                200,
+                {"choices": [{"message": {"content": "Local summary."}}]},
+                method="POST",
+                url="http://localhost:8080/v1/chat/completions",
+            ),
+        ]
+        summary, used = generate_llm_summary(context)
+    assert used is True
+    headers = mock_post.call_args.kwargs.get("headers") or {}
+    assert "Authorization" not in headers
+
+
 def test_llm_prompt_structured_only():
     context = _sample_context()
     with patch("httpx.post") as mock_post:
         mock_post.return_value = httpx_response(
             200,
-            {"response": "Summary from LLM."},
+            {"response": "Summary from Ollama."},
             method="POST",
             url="http://localhost:11434/api/generate",
         )
         summary, used = generate_llm_summary(context)
     assert used is True
     assert "Summary" in summary
-    call_args = mock_post.call_args
-    prompt = call_args.kwargs["json"]["prompt"]
+    ollama_call = mock_post.call_args_list[-1]
+    prompt = ollama_call.kwargs["json"]["prompt"]
     assert "Python" in prompt
     assert "SECRET" not in prompt
 

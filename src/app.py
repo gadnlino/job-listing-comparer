@@ -7,10 +7,12 @@ from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse, Stre
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+from src.analysis.pdf_renderer import build_report_content
 from src.analysis.pipeline import AnalysisInputError, AnalysisView, run_analysis
 from src.analysis.progress import QueueProgressReporter, done_event, error_event, format_ndjson_line
 from src.config import (
     DEFAULT_ADZUNA_COUNTRIES,
+    PDF_RENDERER,
     PROCESSED_DIR,
     REPORTS_DIR,
     STATIC_DIR,
@@ -49,6 +51,7 @@ def _render_results(request: Request, view: AnalysisView):
         {
             "result": view.result,
             "pdf_generated": view.pdf_generated,
+            "pdf_renderer": PDF_RENDERER,
             "llm_fallback": view.llm_fallback,
             "has_remotive": view.has_remotive,
         },
@@ -194,4 +197,21 @@ async def download_pdf():
         REPORTS_DIR / "market_fit_report.pdf",
         "market_fit_report.pdf",
         inline=True,
+    )
+
+
+@app.get("/report/print", response_class=HTMLResponse)
+async def report_print(request: Request):
+    md_path = REPORTS_DIR / "market_fit_report.md"
+    if not md_path.exists():
+        return HTMLResponse(
+            "<h1>Report not available</h1>"
+            "<p>The printable report has not been generated yet. Run an analysis first.</p>",
+            status_code=404,
+        )
+    content, styles = build_report_content(md_path)
+    return templates.TemplateResponse(
+        request,
+        "report_print.html",
+        {"content": content, "styles": styles},
     )

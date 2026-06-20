@@ -20,7 +20,7 @@
 
     {% if llm_fallback %}
     <div class="alert alert-warning">
-      LLM summary unavailable — using template executive summary in the PDF report.
+      LLM summary unavailable — using template executive summary in the report.
     </div>
     {% endif %}
 
@@ -82,13 +82,19 @@
       <p>
         <a href="/download/job_matches.csv">Download CSV</a> |
         <a href="/download/market_summary.md">Download Markdown</a>
-        {% if pdf_generated %}
+        {% if pdf_generated and pdf_renderer == 'browser' %}
+        | <a href="/report/print" target="_blank" rel="noopener">Download PDF report</a>
+        {% elif pdf_generated %}
         | <a href="/download/market_fit_report.pdf" target="_blank" rel="noopener">Open PDF report</a>
         {% endif %}
       </p>
       <div id="pdf-blocked-notice" class="alert alert-warning" style="display:none;">
-        PDF popup was blocked.
+        Report popup was blocked.
+        {% if pdf_renderer == 'browser' %}
+        <a href="/report/print" target="_blank" rel="noopener">Download PDF report</a>
+        {% else %}
         <a href="/download/market_fit_report.pdf" target="_blank" rel="noopener">Open PDF report</a>
+        {% endif %}
       </div>
     </section>
 
@@ -146,8 +152,9 @@
   {% if pdf_generated %}
   <script>
     (function () {
-      var pdf = window.open('/download/market_fit_report.pdf', '_blank', 'noopener');
-      if (!pdf) {
+      var url = {% if pdf_renderer == 'browser' %}'/report/print'{% else %}'/download/market_fit_report.pdf'{% endif %};
+      var reportWindow = window.open(url, '_blank', 'noopener');
+      if (!reportWindow) {
         document.getElementById('pdf-blocked-notice').style.display = 'block';
       }
     })();

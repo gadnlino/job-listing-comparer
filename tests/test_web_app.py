@@ -36,6 +36,56 @@ def test_download_404(client):
     assert response.status_code == 404
 
 
+def test_report_print_route_returns_html(client, monkeypatch):
+    import src.app as app_module
+
+    monkeypatch.setattr("src.config.PDF_RENDERER", "browser")
+    monkeypatch.setattr("src.app.PDF_RENDERER", "browser")
+
+    md_path = app_module.REPORTS_DIR / "market_fit_report.md"
+    md_path.write_text("# Career Market Fit Report\n\n## Executive Summary\n\nHello", encoding="utf-8")
+
+    response = client.get("/report/print")
+    assert response.status_code == 200
+    assert "html2pdf" in response.text
+    assert "market_fit_report.pdf" in response.text
+    assert "Executive Summary" in response.text
+
+
+def test_report_print_route_404_when_missing(client):
+    response = client.get("/report/print")
+    assert response.status_code == 404
+
+
+def test_analyze_auto_opens_print_route_in_browser_mode(
+    client, sample_pdf_bytes, remotive_fixture, monkeypatch
+):
+    monkeypatch.setattr("src.config.PDF_RENDERER", "browser")
+    monkeypatch.setattr("src.app.PDF_RENDERER", "browser")
+    monkeypatch.setattr("src.analysis.pipeline.PDF_RENDERER", "browser")
+    monkeypatch.setattr("src.analysis.report_generator.PDF_RENDERER", "browser")
+    monkeypatch.setattr("src.analysis.pdf_renderer.PDF_RENDERER", "browser")
+    monkeypatch.setattr("src.collectors.adzuna.ADZUNA_APP_ID", "")
+    monkeypatch.setattr("src.collectors.adzuna.ADZUNA_APP_KEY", "")
+
+    def mock_get(url, *args, **kwargs):
+        if "remotive" in url:
+            return httpx_response(200, remotive_fixture, url=str(url))
+        return httpx_response(200, {"data": [], "links": {}}, url=str(url))
+
+    with patch("httpx.get", side_effect=mock_get):
+        with patch("src.analysis.report_generator.generate_llm_summary", return_value=("Summary", True)):
+            response = client.post(
+                "/analyze",
+                files={"file": ("resume.pdf", sample_pdf_bytes, "application/pdf")},
+                data={"max_results": "10", "source": "remotive", "adzuna_country": "all"},
+            )
+
+    assert response.status_code == 200
+    assert "var url = '/report/print'" in response.text
+    assert "var url = '/download/market_fit_report.pdf'" not in response.text
+
+
 def test_analyze_with_mocked_collectors(client, sample_pdf_bytes, remotive_fixture, monkeypatch):
     monkeypatch.setattr("src.collectors.adzuna.ADZUNA_APP_ID", "")
     monkeypatch.setattr("src.collectors.adzuna.ADZUNA_APP_KEY", "")
@@ -56,7 +106,7 @@ def test_analyze_with_mocked_collectors(client, sample_pdf_bytes, remotive_fixtu
 
     assert response.status_code == 200
     assert "Analysis Results" in response.text
-    assert "window.open('/download/market_fit_report.pdf'" in response.text
+    assert "var url = '/download/market_fit_report.pdf'" in response.text
     assert "pdf-blocked-notice" in response.text
 
 
@@ -95,7 +145,7 @@ def test_inaccessible_jobs_excluded_from_results(client, sample_pdf_bytes, remot
             return httpx_response(200, remotive_fixture, url=str(url))
         return httpx_response(200, {"data": [], "links": {}}, url=str(url))
 
-    def mock_validate(matches):
+    def mock_validate(matches, reporter=None):
         updated = []
         for i, m in enumerate(matches):
             status = "inaccessible" if i == 0 else "accessible"
@@ -103,6 +153,7 @@ def test_inaccessible_jobs_excluded_from_results(client, sample_pdf_bytes, remot
         return updated
 
     monkeypatch.setattr("src.analysis.link_validator.validate_job_links", mock_validate)
+    monkeypatch.setattr("src.analysis.pipeline.validate_job_links", mock_validate)
 
     with patch("httpx.get", side_effect=mock_get):
         with patch("src.analysis.report_generator.generate_llm_summary", return_value=("Summary", False)):

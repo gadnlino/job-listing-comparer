@@ -4,7 +4,15 @@ from pathlib import Path
 import httpx
 
 from src.analysis.pdf_renderer import render_pdf_from_markdown
-from src.config import LLM_BASE_URL, LLM_MODEL, OLLAMA_BASE_URL, OLLAMA_MODEL, REPORTS_DIR
+from src.config import (
+    LLM_API_KEY,
+    LLM_BASE_URL,
+    LLM_MODEL,
+    OLLAMA_BASE_URL,
+    OLLAMA_MODEL,
+    PDF_RENDERER,
+    REPORTS_DIR,
+)
 from src.models import JobMatch, ReportSummaryContext
 
 
@@ -30,7 +38,11 @@ def generate_llm_summary(context: ReportSummaryContext) -> tuple[str, bool]:
         f"{context.model_dump_json(indent=2)}"
     )
     try:
-        # Prefer OpenAI-compatible API (llama.cpp supports this at /v1/chat/completions).
+        headers: dict[str, str] = {}
+        if LLM_API_KEY:
+            headers["Authorization"] = f"Bearer {LLM_API_KEY}"
+
+        # Prefer OpenAI-compatible API (llama.cpp / Groq at /v1/chat/completions).
         response = httpx.post(
             f"{LLM_BASE_URL}/v1/chat/completions",
             json={
@@ -41,6 +53,7 @@ def generate_llm_summary(context: ReportSummaryContext) -> tuple[str, bool]:
                 ],
                 "temperature": 0.2,
             },
+            headers=headers,
             timeout=60.0,
         )
         response.raise_for_status()
@@ -267,7 +280,7 @@ def generate_reports(
 
     pdf_result: Path | None = None
     pdf_warning: str | None = None
-    if matches:
+    if PDF_RENDERER == "weasyprint":
         pdf_result, pdf_warning = render_pdf_from_markdown(md_path, pdf_path)
 
     return csv_path, md_path, pdf_result, executive_summary, llm_used, pdf_warning

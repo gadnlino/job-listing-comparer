@@ -18,7 +18,7 @@ from src.analysis.progress import ProgressReporter, null_reporter
 from src.analysis.report_context import build_report_context, build_study_recommendation
 from src.analysis.report_generator import generate_reports
 from src.collectors.orchestrator import JobOrchestrator
-from src.config import PROCESSED_DIR, REPORTS_DIR, UPLOADS_DIR
+from src.config import PDF_RENDERER, PROCESSED_DIR, REPORTS_DIR, UPLOADS_DIR
 from src.models import AnalysisResult, ReportSummaryContext
 from src.resume.parser import (
     EmptyResumeTextError,
@@ -116,7 +116,12 @@ def run_analysis(
             display_matches, context, REPORTS_DIR
         )
         reporter.emit("Rendering PDF report…", stage="report")
-        pdf_generated = pdf_path is not None
+        if PDF_RENDERER == "browser":
+            pdf_generated = True
+        elif PDF_RENDERER == "weasyprint":
+            pdf_generated = pdf_path is not None
+        else:
+            pdf_generated = False
         llm_fallback = pdf_generated and not llm_used
         if pdf_warning:
             collection.warnings.append(pdf_warning)

@@ -97,8 +97,15 @@ def client(tmp_path: Path, monkeypatch):
     monkeypatch.setattr(config, "RAW_DIR", raw)
 
     import src.analysis.pipeline as pipeline_module
+    import src.analysis.pdf_renderer as pdf_renderer_module
+    import src.analysis.report_generator as report_generator_module
     import src.app as app_module
 
+    monkeypatch.setattr(config, "PDF_RENDERER", "weasyprint")
+    monkeypatch.setattr(pipeline_module, "PDF_RENDERER", "weasyprint")
+    monkeypatch.setattr(report_generator_module, "PDF_RENDERER", "weasyprint")
+    monkeypatch.setattr(pdf_renderer_module, "PDF_RENDERER", "weasyprint")
+    monkeypatch.setattr(app_module, "PDF_RENDERER", "weasyprint")
     monkeypatch.setattr(pipeline_module, "UPLOADS_DIR", uploads)
     monkeypatch.setattr(pipeline_module, "PROCESSED_DIR", processed)
     monkeypatch.setattr(pipeline_module, "REPORTS_DIR", reports)
@@ -111,12 +118,32 @@ def client(tmp_path: Path, monkeypatch):
     processed.mkdir(parents=True, exist_ok=True)
     reports.mkdir(parents=True, exist_ok=True)
 
-    def mock_validate_job_links(matches):
+    def mock_validate_job_links(matches, reporter=None):
+        from src.analysis.progress import null_reporter
+
+        reporter = reporter or null_reporter()
+        total = len(matches)
+        if total:
+            reporter.emit(
+                f"Validating {total} job links…",
+                stage="validate",
+                total=total,
+            )
+            for current, match in enumerate(matches, start=1):
+                reporter.emit(
+                    f"Validating link {current}/{total}: {match.job.title} ({match.job.source})",
+                    stage="validate",
+                    source=match.job.source,
+                    title=match.job.title,
+                    current=current,
+                    total=total,
+                )
         return [
             m.model_copy(update={"link_status": "accessible", "link_status_code": 200})
             for m in matches
         ]
 
     monkeypatch.setattr("src.analysis.link_validator.validate_job_links", mock_validate_job_links)
+    monkeypatch.setattr(pipeline_module, "validate_job_links", mock_validate_job_links)
 
     return TestClient(app_module.app)

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Career Market Fit Report</title>
+  <style>{{ styles }}</style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErF5if6Wo7x0jwX8hX7J3S+a3kCzS6C4k4BTqY0/3cEp30bc9aaZqRcoiEkipC6+8inG00it+aw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+  <div id="report-root">
+    {{ content | safe }}
+  </div>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      var root = document.getElementById('report-root');
+      if (!root || typeof html2pdf === 'undefined') {
+        return;
+      }
+      html2pdf()
+        .set({
+          margin: 10,
+          filename: 'market_fit_report.pdf',
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true },
+          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        })
+        .from(root)
+        .save();
+    });
+  </script>
+</body>
+</html>

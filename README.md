@@ -110,6 +110,64 @@ OLLAMA_MODEL=llama3.2
 
 If the LLM server is unavailable, a deterministic template summary is used instead.
 
+### Option C: Groq (recommended for cloud deploy)
+
+[Groq](https://console.groq.com) offers a free tier (no credit card) with an OpenAI-compatible API — enough for one executive summary per analysis.
+
+1. Create an account at https://console.groq.com
+2. Generate an API key
+3. Add to `.env`:
+
+```env
+LLM_BASE_URL=https://api.groq.com/openai/v1
+LLM_MODEL=llama-3.3-70b-versatile
+LLM_API_KEY=gsk_your_key_here
+```
+
+Groq receives only the structured `ReportSummaryContext` JSON (counts, skill lists, top job summaries) — not raw resume text or full job descriptions.
+
+When using Groq, you do **not** need the docker-compose `llama` sidecar.
+
+## PDF rendering (`PDF_RENDERER`)
+
+Reports are authored as Markdown first (`reports/market_fit_report.md`). PDF output mode is controlled by `PDF_RENDERER`:
+
+| Mode | Behavior |
+|------|----------|
+| `weasyprint` (default) | Server writes `market_fit_report.pdf` via WeasyPrint; auto-opens in a new tab |
+| `browser` | Server serves printable HTML at `/report/print`; your browser auto-downloads the PDF (no WeasyPrint on server) |
+| `off` | Markdown + CSV only |
+
+```env
+PDF_RENDERER=weasyprint
+```
+
+For lightweight cloud hosts (Railway, Render, etc.), use **`PDF_RENDERER=browser`** to avoid WeasyPrint RAM usage.
+
+After analysis with `browser` mode, the results page automatically opens `/report/print`, which triggers a client-side PDF download — no button click required.
+
+## Cloud deploy: Railway free tier (example)
+
+Deploy the **app Dockerfile only** (not full `docker-compose`). Recommended env:
+
+```env
+PDF_RENDERER=browser
+LLM_BASE_URL=https://api.groq.com/openai/v1
+LLM_MODEL=llama-3.3-70b-versatile
+LLM_API_KEY=gsk_...
+LINK_VALIDATION_ENABLED=false
+LINK_VALIDATION_MAX_JOBS=25
+```
+
+Tips for ~512 MB RAM:
+
+- Use Groq instead of a local LLM container
+- Use `PDF_RENDERER=browser` instead of WeasyPrint
+- Lower **max results** in the UI (e.g. 50)
+- Optionally disable link validation (shown above)
+
+The production Docker image omits WeasyPrint system libraries when you only need browser PDF mode — set `PDF_RENDERER=browser` on the platform.
+
 ## Platform authentication
 
 | Source     | Auth required | Notes                                      |
@@ -133,18 +191,18 @@ If the LLM server is unavailable, a deterministic template summary is used inste
 4. Download reports:
    - `reports/job_matches.csv` — verified match table with link status columns
    - `reports/market_fit_report.md` — canonical markdown report (also served at `/download/market_summary.md`)
-   - `reports/market_fit_report.pdf` — formatted PDF rendered from the markdown report (opens in browser when generated)
+   - PDF — server file with `PDF_RENDERER=weasyprint`, or browser auto-download with `PDF_RENDERER=browser`
 
-## PDF report setup (WeasyPrint)
+## PDF report setup (WeasyPrint — `PDF_RENDERER=weasyprint` only)
 
-PDF generation is included in `make setup`, which installs native libraries automatically:
+When using server-side PDF (`PDF_RENDERER=weasyprint`), native libraries are required:
 
 - **macOS:** `brew install glib pango cairo gdk-pixbuf libffi` (via Homebrew)
 - **Linux:** apt/dnf packages for Pango, Cairo, GLib (when available)
 
 The app auto-detects Homebrew libraries on macOS. Run `make check` anytime to verify PDF support.
 
-If WeasyPrint is unavailable, analysis still completes and the Markdown report is written; the results page shows a warning and PDF auto-open is skipped.
+If WeasyPrint is unavailable, analysis still completes and the Markdown report is written; switch to `PDF_RENDERER=browser` or accept no server PDF.
 
 ## Skill catalog and matching scope
 
@@ -155,7 +213,7 @@ If WeasyPrint is unavailable, analysis still completes and the Markdown report i
 
 ## LLM scope
 
-Ollama receives only a `ReportSummaryContext` JSON payload (counts, skill lists, top job summaries). It does **not** receive raw resume text or full job descriptions.
+Configured LLM providers (Groq, llama.cpp, or Ollama) receive only a `ReportSummaryContext` JSON payload (counts, skill lists, top job summaries). They do **not** receive raw resume text or full job descriptions.
 
 ## Testing
 

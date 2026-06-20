@@ -48,7 +48,8 @@ def test_prepare_html_tags_wide_job_table():
     assert 'class="wide-table"' in result
 
 
-def test_pdf_render_mocked_weasyprint(tmp_path: Path):
+def test_pdf_render_mocked_weasyprint(tmp_path: Path, monkeypatch):
+    monkeypatch.setattr("src.analysis.pdf_renderer.PDF_RENDERER", "weasyprint")
     resume = extract_skills("Python AWS")
     job = JobPosting(
         id="1", source="remotive", title="Backend", company="Co",
@@ -114,7 +115,8 @@ def test_pdf_multiple_jobs_via_mock(tmp_path: Path):
     assert pdf_path.exists()
 
 
-def test_pdf_graceful_skip_on_import_error(tmp_path: Path):
+def test_pdf_graceful_skip_on_import_error(tmp_path: Path, monkeypatch):
+    monkeypatch.setattr("src.analysis.pdf_renderer.PDF_RENDERER", "weasyprint")
     md_path = tmp_path / "report.md"
     pdf_path = tmp_path / "report.pdf"
     md_path.write_text("# Title\n\nBody", encoding="utf-8")
@@ -129,7 +131,8 @@ def test_pdf_graceful_skip_on_import_error(tmp_path: Path):
     assert warning == PDF_UNAVAILABLE_MSG
 
 
-def test_pdf_graceful_skip_on_missing_system_libs(tmp_path: Path):
+def test_pdf_graceful_skip_on_missing_system_libs(tmp_path: Path, monkeypatch):
+    monkeypatch.setattr("src.analysis.pdf_renderer.PDF_RENDERER", "weasyprint")
     md_path = tmp_path / "report.md"
     pdf_path = tmp_path / "report.pdf"
     md_path.write_text("# Title\n\nBody", encoding="utf-8")
@@ -144,7 +147,8 @@ def test_pdf_graceful_skip_on_missing_system_libs(tmp_path: Path):
     assert warning == PDF_UNAVAILABLE_MSG
 
 
-def test_pdf_graceful_skip_on_render_error(tmp_path: Path):
+def test_pdf_graceful_skip_on_render_error(tmp_path: Path, monkeypatch):
+    monkeypatch.setattr("src.analysis.pdf_renderer.PDF_RENDERER", "weasyprint")
     md_path = tmp_path / "report.md"
     pdf_path = tmp_path / "report.pdf"
     md_path.write_text("# Title\n\n| A | B |\n| --- | --- |\n| 1 | 2 |", encoding="utf-8")

@@ -6,6 +6,8 @@ import sys
 import markdown
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
+from src.config import PDF_RENDERER
+
 TEMPLATES_DIR = Path(__file__).resolve().parent / "templates"
 
 PDF_UNAVAILABLE_MSG = (
@@ -61,23 +63,38 @@ def _prepare_html_for_pdf(html_body: str) -> str:
     return table_pattern.sub(tag_table, html_body)
 
 
+def _jinja_env() -> Environment:
+    return Environment(
+        loader=FileSystemLoader(TEMPLATES_DIR),
+        autoescape=select_autoescape(["html"]),
+    )
+
+
+def build_report_content(md_path: Path) -> tuple[str, str]:
+    md_text = md_path.read_text(encoding="utf-8")
+    html_body = markdown.markdown(md_text, extensions=["tables", "fenced_code"])
+    html_body = _prepare_html_for_pdf(html_body)
+    styles = (TEMPLATES_DIR / "report.css").read_text(encoding="utf-8")
+    return html_body, styles
+
+
+def build_report_html(md_path: Path) -> str:
+    html_body, styles = build_report_content(md_path)
+    template = _jinja_env().get_template("report.html")
+    return template.render(content=html_body, styles=styles)
+
+
 def render_pdf_from_markdown(md_path: Path, pdf_path: Path) -> tuple[Path | None, str | None]:
+    if PDF_RENDERER != "weasyprint":
+        return None, None
+
     try:
         HTML = _import_weasyprint_html()
     except (ImportError, OSError):
         return None, PDF_UNAVAILABLE_MSG
 
     try:
-        md_text = md_path.read_text(encoding="utf-8")
-        html_body = markdown.markdown(md_text, extensions=["tables", "fenced_code"])
-        html_body = _prepare_html_for_pdf(html_body)
-        styles = (TEMPLATES_DIR / "report.css").read_text(encoding="utf-8")
-        env = Environment(
-            loader=FileSystemLoader(TEMPLATES_DIR),
-            autoescape=select_autoescape(["html"]),
-        )
-        template = env.get_template("report.html")
-        html_full = template.render(content=html_body, styles=styles)
+        html_full = build_report_html(md_path)
         pdf_path.parent.mkdir(parents=True, exist_ok=True)
         HTML(string=html_full, base_url=str(TEMPLATES_DIR)).write_pdf(str(pdf_path))
         return pdf_path, None

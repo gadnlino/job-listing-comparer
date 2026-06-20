@@ -23,7 +23,6 @@ RUN pip install --no-cache-dir -r /app/requirements.txt
 
 COPY src /app/src
 COPY scripts /app/scripts
-COPY openspec /app/openspec
 COPY .env.example /app/.env.example
 
 RUN mkdir -p /app/data/uploads /app/data/raw /app/data/processed /app/reports
