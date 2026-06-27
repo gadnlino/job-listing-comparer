@@ -69,9 +69,19 @@ h1, h2, h3 { margin-top: 0; }
 
 .cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
   margin-bottom: 1rem;
+}
+
+.cards .card { margin-bottom: 0; }
+
+@media (max-width: 720px) {
+  .cards { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 420px) {
+  .cards { grid-template-columns: 1fr; }
 }
 
 .card h3 {
