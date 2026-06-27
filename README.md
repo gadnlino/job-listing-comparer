@@ -2,7 +2,8 @@
 
 A local web app that compares your resume against real job postings from public APIs, classifies roles into career tracks, and generates market-fit reports with skill gaps and study recommendations.
 
-**Live demo:** [job-listing-comparer-production.up.railway.app](https://job-listing-comparer-production.up.railway.app/)
+**Live demo:** [job-listing-comparer-production.up.railway.app](https://job-listing-comparer-production.up.railway.app/)  
+**Project site:** [gadnlino.github.io/job-listing-comparer](https://gadnlino.github.io/job-listing-comparer/) (GitHub Pages — enable after merge; see below)
 
 ## What it does
 
@@ -171,6 +172,24 @@ Tips for ~512 MB RAM:
 - Optionally disable link validation (shown above)
 
 The production Docker image omits WeasyPrint system libraries when you only need browser PDF mode — set `PDF_RENDERER=browser` on the platform.
+
+## GitHub Pages landing site
+
+A static marketing page lives in `docs/` and is published via GitHub Pages after merging to `main`.
+
+**Expected URL:** [https://gadnlino.github.io/job-listing-comparer/](https://gadnlino.github.io/job-listing-comparer/)
+
+The landing page links to the live Railway app. It does not host the analyzer — GitHub Pages serves static HTML only.
+
+### Enable GitHub Pages (one-time, after merge)
+
+1. Merge the `docs/` changes to `main`
+2. GitHub → **Settings** → **Pages**
+3. Source: **Deploy from a branch**
+4. Branch: **`main`**, folder: **`/docs`**
+5. Save and wait ~1–2 minutes for the site to build
+
+To preview locally before merge, open `docs/index.html` in a browser (or use a simple static server).
 
 ## Platform authentication
 
